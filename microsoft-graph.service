@@ -1,0 +1,11 @@
+[Unit]
+Description = Provides a connection to Microsoft's Graph api. Internal queries can be directed to port 8000.
+After = network.target
+
+[Service]
+WorkingDirectory=/home/sbluhm/tamtt
+ExecStart = python3 /home/sbluhm/tamtt/manage.py runserver 0.0.0.0:8000
+
+[Install]
+WantedBy = multi-user.target
+
