@@ -1,5 +1,6 @@
-# Copyright (c) Microsoft Corporation.
-# Licensed under the MIT License.
+#TODO: Sort categories alphabetically.
+#TODO: Handle parallel meetings sensibly.
+
 
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
@@ -73,10 +74,14 @@ def calendar(request):
   context = initialize_context(request)
 
   token = get_token(request)
+  if request.GET.get('week'):
+    events = get_calendar_events(token, request.GET['week'])
+  else:
+    events = get_calendar_events(token)
 
-  events = get_calendar_events(token)
   timesheet = {}
-  totaltime = [datetime.timedelta(0)]*7
+  totaltime = [datetime.timedelta(0)]*8 # 8 will be the week total
+  week_totaltime = datetime.timedelta(0)
 
   if events:
     # Step one, split out and merge customers and deliverables
@@ -107,15 +112,14 @@ def calendar(request):
                 weekday = dateutil.parser.parse(event['start']['dateTime']).weekday()
                 timesheet[customer][temp_deliverable['category']][weekday] += duration
                 totaltime[weekday] += duration
+                week_totaltime += duration
 
         else:
             temp_deliverable['category'] = "Others"
 
 #            newtimesheet["Others"].append(deliverables)
 
-#    for i in totaltime:
-#        totaltime[weekday] = str(totaltime[weekday])
-#        totaltime[weekday] = datetime.datetime.strptime(str(totaltime[weekday]), "%H:%M:%S")
+    totaltime[7] = week_totaltime
 
     context['totaltime'] = totaltime
     context['customer'] = timesheet

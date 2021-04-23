@@ -1,5 +1,5 @@
-<!-- Copyright (c) Microsoft Corporation.
-     Licensed under the MIT License. -->
+<!-- #TODO: Add CSS to table colouring.
+      -->
 
 <!-- <CalendarSnippet> -->
 {% extends "tutorial/layout.html" %}
@@ -26,13 +26,13 @@
        {% for customer in customer.items %}
 
        <tr>
-	       <td colspan="0"><b>{{ customer.0 }}</b></td>
+	       <td colspan="8" bgcolor="Gainsboro"><b>{{ customer.0 }}</b></td>
        </tr>
   {% for entry in customer.1.items  %}
   <tr>
 	  <td>{{ entry.0 }} </td>
-                 <td>{{ entry.1.5|duration }}</td>
-                 <td>{{ entry.1.6|duration }}</td>
+                 <td bgcolor="Gainsboro">{{ entry.1.5|duration }}</td>
+                 <td bgcolor="Gainsboro">{{ entry.1.6|duration }}</td>
                  <td>{{ entry.1.0|duration }}</td>
                  <td>{{ entry.1.1|duration }}</td>
                  <td>{{ entry.1.2|duration }}</td>
@@ -42,9 +42,9 @@
 	  {% endfor %}
   {% endfor %}
   <tr>
-	  <td><b>TOTAL</b> </td>
-                 <td><b>{{ totaltime.5|duration }}</b></td>
-                 <td><b>{{ totaltime.6|duration }}</b></td>
+	  <td><b>TOTAL ({{ totaltime.7|duration }} hrs):</b> </td>
+                 <td bgcolor="Gainsboro"><b>{{ totaltime.5|duration }}</b></td>
+                 <td bgcolor="Gainsboro"><b>{{ totaltime.6|duration }}</b></td>
                  <td><b>{{ totaltime.0|duration }}</b></td>
                  <td><b>{{ totaltime.1|duration }}</b></td>
                  <td><b>{{ totaltime.2|duration }}</b></td>
