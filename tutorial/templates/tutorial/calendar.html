@@ -4,11 +4,9 @@
 <!-- <CalendarSnippet> -->
 {% extends "tutorial/layout.html" %}
 {% block content %}
+{% load custom_tags %}
 <h1>Calendar</h1>
 {% if customer %}
-
-  {% for customer in customer.items %}
-  <h2>{{ customer.0 }}</h2>
 
     <table class="table">
        <thead>
@@ -24,23 +22,39 @@
          </tr>
        </thead>
        <tbody>
+
+       {% for customer in customer.items %}
+
+       <tr>
+	       <td colspan="0"><b>{{ customer.0 }}</b></td>
+       </tr>
   {% for entry in customer.1.items  %}
   <tr>
 	  <td>{{ entry.0 }} </td>
-                 <td>{{ entry.1.5 }}</td>
-                 <td>{{ entry.1.6 }}</td>
-                 <td>{{ entry.1.0 }}</td>
-                 <td>{{ entry.1.1 }}</td>
-                 <td>{{ entry.1.2 }}</td>
-                 <td>{{ entry.1.3 }}</td>
-                 <td>{{ entry.1.4 }}</td>
+                 <td>{{ entry.1.5|duration }}</td>
+                 <td>{{ entry.1.6|duration }}</td>
+                 <td>{{ entry.1.0|duration }}</td>
+                 <td>{{ entry.1.1|duration }}</td>
+                 <td>{{ entry.1.2|duration }}</td>
+                 <td>{{ entry.1.3|duration }}</td>
+                 <td>{{ entry.1.4|duration }}</td>
         </tr>
 	  {% endfor %}
+  {% endfor %}
+  <tr>
+	  <td><b>TOTAL</b> </td>
+                 <td><b>{{ totaltime.5|duration }}</b></td>
+                 <td><b>{{ totaltime.6|duration }}</b></td>
+                 <td><b>{{ totaltime.0|duration }}</b></td>
+                 <td><b>{{ totaltime.1|duration }}</b></td>
+                 <td><b>{{ totaltime.2|duration }}</b></td>
+                 <td><b>{{ totaltime.3|duration }}</b></td>
+                 <td><b>{{ totaltime.4|duration }}</b></td>
+        </tr>
 
   </tbody>
 </table>
 
-  {% endfor %}
 {% endif %}
 {% endblock %}
 <!-- </CalendarSnippet> -->

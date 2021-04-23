@@ -33,8 +33,8 @@ def get_calendar_events(token):
   query_params = {
     '$select': 'subject,start,end,categories',
     '$orderby': 'start/DateTime DESC',
-    '$top': 500
-#    '$filter': "start/dateTime ge '2021-04-21T00:00' and end/dateTime lt '2021-04-22T00:00'"
+    '$top': 500,
+    '$filter': "showAs eq 'busy'"
   }
 # $filter=start/dateTime ge '2021-04-21T00:00' and end/dateTime lt '2021-04-22T00:00'&$select=subject,start,end,categories"
 

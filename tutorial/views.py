@@ -76,8 +76,7 @@ def calendar(request):
 
   events = get_calendar_events(token)
   timesheet = {}
-  newtimesheet = {}
-
+  totaltime = [datetime.timedelta(0)]*7
 
   if events:
     # Step one, split out and merge customers and deliverables
@@ -94,34 +93,31 @@ def calendar(request):
                     tempcust.append(category)
             if not 'category' in temp_deliverable:
                 temp_deliverable['category'] = "Others"
+
             for customer in tempcust:
 
-                if not customer in newtimesheet:
-                    newtimesheet[customer] = []
-                    x_deliverable = {}
-                    timesheet[customer] = x_deliverable
+                if not customer in timesheet:
+                    timesheet[customer] = {}
+
                 # add to existing deliverables here
                 if not temp_deliverable['category'] in timesheet[customer]:
                     day = [datetime.timedelta(0)]*7
                     timesheet[customer][temp_deliverable['category']] = day
                 duration = dateutil.parser.parse(event['end']['dateTime']) - dateutil.parser.parse(event['start']['dateTime'] )
-#                old = timesheet[customer][temp_deliverable['category']][0]
-#                print(type(old))
+                weekday = dateutil.parser.parse(event['start']['dateTime']).weekday()
+                timesheet[customer][temp_deliverable['category']][weekday] += duration
+                totaltime[weekday] += duration
 
-#                timesheet[customer][temp_deliverable['category']][dateutil.parser.parse(event['start']['dateTime']).weekday() ] +=  dateutil.parser.parse(event['end']['dateTime']) #- dateutil.parser.parse(event['start']['dateTime'] ) 
-                timesheet[customer][temp_deliverable['category']][dateutil.parser.parse(event['start']['dateTime']).weekday()] += duration
-
-                for deliverable in newtimesheet[customer]:
-                    for entry in deliverable['category']:
-                        entry
-                #Original line below
-                newtimesheet[customer].append(temp_deliverable)
         else:
             temp_deliverable['category'] = "Others"
 
 #            newtimesheet["Others"].append(deliverables)
 
+#    for i in totaltime:
+#        totaltime[weekday] = str(totaltime[weekday])
+#        totaltime[weekday] = datetime.datetime.strptime(str(totaltime[weekday]), "%H:%M:%S")
 
+    context['totaltime'] = totaltime
     context['customer'] = timesheet
 
 
