@@ -1,6 +1,8 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
+from datetime import datetime, timedelta
+
 # <FirstCodeSnippet>
 from requests_oauthlib import OAuth2Session
 
@@ -25,8 +27,15 @@ def get_presence_events(token):
 # </GetPresenceSnippet>
 
 # <GetCalendarSnippet>
-def get_calendar_events(token):
+# input_week is an ISO date of one of the days within the considered week.
+def get_calendar_events(token, input_week=datetime.now().strftime("%Y-%m-%d")):
   graph_client = OAuth2Session(token=token)
+
+  # Get saturday on/before given date
+  #TODO: Time zones are not considered! (who cares about others...)
+  week = datetime.strptime(input_week, "%Y-%m-%d")
+  start_date = week - timedelta(days=week.weekday()+2) # Saturday before input_week
+  end_date = start_date + timedelta(days=6)
 
   # Configure query parameters to
   # modify the results
@@ -36,11 +45,9 @@ def get_calendar_events(token):
     '$top': 500,
     '$filter': "showAs eq 'busy'"
   }
-# $filter=start/dateTime ge '2021-04-21T00:00' and end/dateTime lt '2021-04-22T00:00'&$select=subject,start,end,categories"
 
-  # Send GET to /me/events
-#  events = graph_client.get('{0}/me/events'.format(graph_url), params=query_params)
-  events = graph_client.get('{0}/me/calendar/calendarView?startDateTime=2021-04-10T00:00:00&endDateTime=2021-04-16T23:59:59'.format(graph_url), params=query_params)
+# Send GET to /me/calendar
+  events = graph_client.get('{0}/me/calendar/calendarView?startDateTime={1}T00:00:00&endDateTime={2}T23:59:59'.format(graph_url,start_date.strftime("%Y-%m-%d"),end_date.strftime("%Y-%m-%d")), params=query_params)
   # Return the JSON result
   return events.json()
 # </GetCalendarSnippet>
