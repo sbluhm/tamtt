@@ -47,16 +47,25 @@ If you don't have a Microsoft account, there are a couple of options to get a fr
 1. In your command-line interface (CLI), navigate to this directory and run the following command to install requirements.
 
     ```Shell
-    pip install -r requirements.txt
+    pip3 install -r requirements.txt
     ```
+
+    Windows subsystem
+
+    ```Shell
+    apt update
+    apt install python3-pip
+    pip3 install -r requirements.txt
+    ```
+
 
 1. In your CLI, run the following command to initialize the app's database.
 
     ```Shell
-    python manage.py migrate
+    python3 manage.py migrate
     ```
 
-## Run the sample
+## Run the timesheet server
 
 1. Run the following command in your CLI to start the application.
 
@@ -65,6 +74,7 @@ If you don't have a Microsoft account, there are a couple of options to get a fr
     ```
 
 1. Open a browser and browse to `http://localhost:8000`.
+
 
 ## Install as a local service
 
