@@ -71,6 +71,7 @@ def callback(request):
 
 # <CalendarViewSnippet>
 def calendar(request):
+  preparation_time = timedelta(minutes=10)
   context = initialize_context(request)
 
   token = get_token(request)
@@ -91,31 +92,32 @@ def calendar(request):
     for event in events['value']:
         temp_deliverable = {}
         temp_deliverable[ dateutil.parser.parse(event['start']['dateTime']).weekday() ] = dateutil.parser.parse(event['end']['dateTime']) - dateutil.parser.parse(event['start']['dateTime'] )
+        weekday = dateutil.parser.parse(event['start']['dateTime']).weekday()
         if event['categories']:
             tempcust = []
+            tempdel = []
             for category in event['categories']:
                 if category[0].isdigit():
                     # here multiple deliverables should be allowed! Otherwise last deliverable is taken
                     temp_deliverable['category'] = category
+                    tempdel.append(category)
                 else:
                     tempcust.append(category)
             if not 'category' in temp_deliverable:
                 temp_deliverable['category'] = "Others"
+                tempdel.append("Others")
 
+            duration = (dateutil.parser.parse(event['end']['dateTime']) - dateutil.parser.parse(event['start']['dateTime'] ) + preparation_time)/len(tempdel)
             for customer in tempcust:
-
                 if not customer in timesheet:
                     timesheet[customer] = {}
-
-                # add to existing deliverables here
-                if not temp_deliverable['category'] in timesheet[customer]:
-                    day = [timedelta(0)]*7
-                    timesheet[customer][temp_deliverable['category']] = day
-                duration = dateutil.parser.parse(event['end']['dateTime']) - dateutil.parser.parse(event['start']['dateTime'] )
-                weekday = dateutil.parser.parse(event['start']['dateTime']).weekday()
-                timesheet[customer][temp_deliverable['category']][weekday] += duration
-                totaltime[weekday] += duration
-                week_totaltime += duration
+                for deliverable in tempdel:
+                    if not deliverable in timesheet[customer]:
+                        day = [timedelta(0)]*7
+                        timesheet[customer][deliverable] = day
+                    timesheet[customer][deliverable][weekday] += duration
+                    totaltime[weekday] += duration
+                    week_totaltime += duration
 
         else:
             temp_deliverable['category'] = "Others"
