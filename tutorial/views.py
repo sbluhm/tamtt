@@ -1,7 +1,6 @@
 #TODO: Sort categories alphabetically.
 #TODO: Handle parallel meetings sensibly.
 
-
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
@@ -9,6 +8,7 @@ from tutorial.auth_helper import get_sign_in_url, get_token_from_code, store_tok
 from tutorial.graph_helper import get_user, get_calendar_events, get_presence_events
 import dateutil.parser
 from datetime import datetime, timedelta
+from math import ceil
 
 # <HomeViewSnippet>
 def home(request):
@@ -90,24 +90,20 @@ def calendar(request):
   if events:
     # Step one, split out and merge customers and deliverables
     for event in events['value']:
-        temp_deliverable = {}
-        temp_deliverable[ dateutil.parser.parse(event['start']['dateTime']).weekday() ] = dateutil.parser.parse(event['end']['dateTime']) - dateutil.parser.parse(event['start']['dateTime'] )
         weekday = dateutil.parser.parse(event['start']['dateTime']).weekday()
+        duration = dateutil.parser.parse(event['end']['dateTime']) - dateutil.parser.parse(event['start']['dateTime'])
         if event['categories']:
             tempcust = []
             tempdel = []
             for category in event['categories']:
                 if category[0].isdigit():
-                    # here multiple deliverables should be allowed! Otherwise last deliverable is taken
-                    temp_deliverable['category'] = category
                     tempdel.append(category)
                 else:
                     tempcust.append(category)
-            if not 'category' in temp_deliverable:
-                temp_deliverable['category'] = "Others"
+            if len(tempdel) < 1:
                 tempdel.append("Others")
 
-            duration = (dateutil.parser.parse(event['end']['dateTime']) - dateutil.parser.parse(event['start']['dateTime'] ) + preparation_time)/len(tempdel)
+            duration = (duration + preparation_time)/len(tempdel)
             for customer in tempcust:
                 if not customer in timesheet:
                     timesheet[customer] = {}
@@ -116,13 +112,23 @@ def calendar(request):
                         day = [timedelta(0)]*7
                         timesheet[customer][deliverable] = day
                     timesheet[customer][deliverable][weekday] += duration
-                    totaltime[weekday] += duration
-                    week_totaltime += duration
-
         else:
-            temp_deliverable['category'] = "Others"
+            if not "Others" in timesheet:
+                timesheet["Others"] = {}
+                day = [timedelta(0)]*7
+                timesheet["Others"]["Others"] = day
+            timesheet["Others"]["Others"][weekday] += duration
 
-#            newtimesheet["Others"].append(deliverables)
+
+# Round all categories of all customers.
+    for customer in timesheet:
+        for deliverable in timesheet[customer]:
+            for weekday in range(7):
+                minutes = ceil(timesheet[customer][deliverable][weekday].seconds/(15*60))*15
+                new_duration = timedelta(minutes=minutes)
+                timesheet[customer][deliverable][weekday] = new_duration
+                totaltime[weekday] += new_duration
+                week_totaltime += new_duration
 
     totaltime[7] = week_totaltime
 
@@ -136,8 +142,6 @@ def calendar(request):
     selected_start_date = selected_weekday - timedelta(days=selected_weekday.weekday()+2)
     if selected_weekday.weekday() >= 5:
       selected_start_date = selected_start_date + timedelta(days=7)
-
-
 
     for i in range(5):
         week = ["","",False] # 0 = weekstart, 1 = week text
