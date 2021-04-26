@@ -11,7 +11,18 @@
     <table class="table">
        <thead>
 	 <tr>
-	   <th scope="col">Categories</th>
+	   <th scope="col">
+              <form> 
+	      <label for="week">Choose a week:</label>
+              <select name="week" id="week" autocomplete="off" onchange='this.form.submit()'>
+              {% for week in calendar  %}
+                <option value="{{ week.0 }}" {% if week.2 %}selected="selected"{%endif%}>{{ week.1 }}</option>
+              {% endfor %}
+              </select>
+	      <noscript><input type="submit" value="Submit"></noscript>
+	      </form>
+
+	   </th>
 	   <th scope="col">Sat</th>
 	   <th scope="col">Sun</th>
 	   <th scope="col">Mon</th>

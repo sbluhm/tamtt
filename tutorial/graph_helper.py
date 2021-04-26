@@ -25,13 +25,16 @@ def get_presence_events(token):
 
 # <GetCalendarSnippet>
 # input_week is an ISO date of one of the days within the considered week.
-def get_calendar_events(token, input_week=datetime.now().strftime("%Y-%m-%d")):
+def get_calendar_events(token, input_date=datetime.now().strftime("%Y-%m-%d")):
   graph_client = OAuth2Session(token=token)
 
   # Get saturday on/before given date
   #TODO: Time zones are not considered! (who cares about others...)
-  week = datetime.strptime(input_week, "%Y-%m-%d")
+  week = datetime.strptime(input_date, "%Y-%m-%d")
+  weekday = week.weekday()
   start_date = week - timedelta(days=week.weekday()+2) # Saturday before input_week
+  if week.weekday() >= 5:
+      start_date = start_date + timedelta(days=7)
   end_date = start_date + timedelta(days=6)
 
   # Configure query parameters to
