@@ -8,7 +8,7 @@ from django.urls import reverse
 from tutorial.auth_helper import get_sign_in_url, get_token_from_code, store_token, store_user, remove_user_and_token, get_token
 from tutorial.graph_helper import get_user, get_calendar_events, get_presence_events
 import dateutil.parser
-import datetime
+from datetime import datetime, timedelta
 
 # <HomeViewSnippet>
 def home(request):
@@ -75,13 +75,16 @@ def calendar(request):
 
   token = get_token(request)
   if request.GET.get('week'):
-    events = get_calendar_events(token, request.GET['week'])
+    selected_date = request.GET['week']
+    events = get_calendar_events(token, selected_date)
   else:
     events = get_calendar_events(token)
+    selected_date = datetime.now().strftime("%Y-%m-%d")
+
 
   timesheet = {}
-  totaltime = [datetime.timedelta(0)]*8 # 8 will be the week total
-  week_totaltime = datetime.timedelta(0)
+  totaltime = [timedelta(0)]*8 # 8 will be the week total
+  week_totaltime = timedelta(0)
 
   if events:
     # Step one, split out and merge customers and deliverables
@@ -106,7 +109,7 @@ def calendar(request):
 
                 # add to existing deliverables here
                 if not temp_deliverable['category'] in timesheet[customer]:
-                    day = [datetime.timedelta(0)]*7
+                    day = [timedelta(0)]*7
                     timesheet[customer][temp_deliverable['category']] = day
                 duration = dateutil.parser.parse(event['end']['dateTime']) - dateutil.parser.parse(event['start']['dateTime'] )
                 weekday = dateutil.parser.parse(event['start']['dateTime']).weekday()
@@ -121,6 +124,31 @@ def calendar(request):
 
     totaltime[7] = week_totaltime
 
+
+# Week Picker
+    weekday = datetime.strptime( datetime.now().strftime("%Y-%m-%d"), "%Y-%m-%d")
+    start_date = weekday - timedelta(days=weekday.weekday()+2) # Saturday before input_week
+    end_date = start_date + timedelta(days=6)
+    calendar = []
+    selected_weekday=datetime.strptime(selected_date, "%Y-%m-%d")
+    selected_start_date = selected_weekday - timedelta(days=selected_weekday.weekday()+2)
+    if selected_weekday.weekday() >= 5:
+      selected_start_date = selected_start_date + timedelta(days=7)
+
+
+
+    for i in range(5):
+        week = ["","",False] # 0 = weekstart, 1 = week text
+        loop_start_date = start_date - timedelta(days=7*i) # Saturday before input_week
+        loop_end_date = loop_start_date + timedelta(days=6)
+        week[0] = loop_start_date.strftime("%Y-%m-%d")
+        week[1] = loop_start_date.strftime("%Y-%m-%d") + " - " + loop_end_date.strftime("%Y-%m-%d")
+        if loop_start_date == selected_start_date:
+            week[2] = True
+        calendar.append(week)
+
+
+    context['calendar'] = calendar
     context['totaltime'] = totaltime
     context['customer'] = timesheet
 
