@@ -27,8 +27,7 @@
 	   <th scope="col">&nbsp;</th>
 	   <th scope="col">&nbsp;</th>
 	   <th scope="col">&nbsp;</th>
-	   <th scope="col">&nbsp;</th>
-	   <th scope="col">&nbsp;</th>
+	   <th scope="col" colspan="3" >Time values in decimal</th>
 	   <th scope="col">&nbsp;</th>
          </tr>
        </thead>
@@ -45,29 +44,32 @@
 	   <th bgcolor="Gainsboro">Wed</th>
            <th bgcolor="Gainsboro">Thu</th>
            <th bgcolor="Gainsboro">Fri</th>
+	   <th bgcolor="Gainsboro">Sum</th>
        </tr>
   {% for entry in customer.1.items  %}
   <tr>
 	  <td>{{ entry.0 }} </td>
-                 <td bgcolor="Gainsboro">{{ entry.1.5|duration }}</td>
-                 <td bgcolor="Gainsboro">{{ entry.1.6|duration }}</td>
-                 <td>{{ entry.1.0|duration }}</td>
-                 <td>{{ entry.1.1|duration }}</td>
-                 <td>{{ entry.1.2|duration }}</td>
-                 <td>{{ entry.1.3|duration }}</td>
-                 <td>{{ entry.1.4|duration }}</td>
+                 <td bgcolor="Gainsboro">{{ entry.1.5|duration_decimal }}</td>
+                 <td bgcolor="Gainsboro">{{ entry.1.6|duration_decimal }}</td>
+                 <td>{{ entry.1.0|duration_decimal }}</td>
+                 <td>{{ entry.1.1|duration_decimal }}</td>
+                 <td>{{ entry.1.2|duration_decimal }}</td>
+                 <td>{{ entry.1.3|duration_decimal }}</td>
+                 <td>{{ entry.1.4|duration_decimal }}</td>
+		 <td>{{ entry.1.7|duration_decimal }}</td>
         </tr>
 	  {% endfor %}
   {% endfor %}
   <tr>
-	  <td><b>TOTAL ({{ totaltime.7|duration }} hrs):</b> </td>
-                 <td bgcolor="Gainsboro"><b>{{ totaltime.5|duration }}</b></td>
-                 <td bgcolor="Gainsboro"><b>{{ totaltime.6|duration }}</b></td>
-                 <td><b>{{ totaltime.0|duration }}</b></td>
-                 <td><b>{{ totaltime.1|duration }}</b></td>
-                 <td><b>{{ totaltime.2|duration }}</b></td>
-                 <td><b>{{ totaltime.3|duration }}</b></td>
-                 <td><b>{{ totaltime.4|duration }}</b></td>
+	  <td><b>TOTAL ({{ totaltime.7|duration_decimal }} hrs):</b> </td>
+                 <td bgcolor="Gainsboro"><b>{{ totaltime.5|duration_decimal }}</b></td>
+                 <td bgcolor="Gainsboro"><b>{{ totaltime.6|duration_decimal }}</b></td>
+                 <td><b>{{ totaltime.0|duration_decimal }}</b></td>
+                 <td><b>{{ totaltime.1|duration_decimal }}</b></td>
+                 <td><b>{{ totaltime.2|duration_decimal }}</b></td>
+                 <td><b>{{ totaltime.3|duration_decimal }}</b></td>
+                 <td><b>{{ totaltime.4|duration_decimal }}</b></td>
+		 <td><b>{{ totaltime.7|duration_decimal }}</b></td>
         </tr>
 
   </tbody>

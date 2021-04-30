@@ -110,7 +110,7 @@ def calendar(request):
                 timesheet[customer] = {}
             for deliverable in tempdeliverable:
                 if not deliverable in timesheet[customer]:
-                    day = [timedelta(0)]*7
+                    day = [timedelta(0)]*8
                     timesheet[customer][deliverable] = day
                 timesheet[customer][deliverable][weekday] += duration
 
@@ -121,11 +121,10 @@ def calendar(request):
                 minutes = ceil(timesheet[customer][deliverable][weekday].seconds/(15*60))*15
                 new_duration = timedelta(minutes=minutes)
                 timesheet[customer][deliverable][weekday] = new_duration
+                timesheet[customer][deliverable][7] += new_duration
                 totaltime[weekday] += new_duration
-                week_totaltime += new_duration
 
     totaltime[7] = week_totaltime
-
 
 # Week Picker
     weekday = datetime.strptime( datetime.now().strftime("%Y-%m-%d"), "%Y-%m-%d")
@@ -147,12 +146,18 @@ def calendar(request):
             week[2] = True
         calendar.append(week)
 
+# Sort data
+    sorted_timesheet = {}
+    for v in sorted(timesheet.keys()):
+        sorted_timesheet[v] = {}
+        for w in sorted(timesheet[v].keys()):
+            sorted_timesheet[v][w] = timesheet[v][w]
 
+
+# Pass data to template
     context['calendar'] = calendar
     context['totaltime'] = totaltime
-    context['customer'] = timesheet
-
-
+    context['customer'] = sorted_timesheet
 
   return render(request, 'tutorial/calendar.html', context)
 # </CalendarViewSnippet>
