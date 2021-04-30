@@ -92,33 +92,27 @@ def calendar(request):
     for event in events['value']:
         weekday = dateutil.parser.parse(event['start']['dateTime']).weekday()
         duration = dateutil.parser.parse(event['end']['dateTime']) - dateutil.parser.parse(event['start']['dateTime'])
-        if event['categories']:
-            tempcust = []
-            tempdel = []
-            for category in event['categories']:
-                if category[0].isdigit():
-                    tempdel.append(category)
-                else:
-                    tempcust.append(category)
-            if len(tempdel) < 1:
-                tempdel.append("Others")
+        tempcust = []
+        tempdeliverable = []
+        for category in event['categories']:
+            if category[0].isdigit():
+                tempdeliverable.append(category)
+            else:
+                tempcust.append(category)
+        if len(tempdeliverable) < 1:
+            tempdeliverable.append("Others")
+        if len(tempcust) < 1:
+            tempcust.append("Others")
 
-            duration = (duration + preparation_time)/len(tempdel)
-            for customer in tempcust:
-                if not customer in timesheet:
-                    timesheet[customer] = {}
-                for deliverable in tempdel:
-                    if not deliverable in timesheet[customer]:
-                        day = [timedelta(0)]*7
-                        timesheet[customer][deliverable] = day
-                    timesheet[customer][deliverable][weekday] += duration
-        else:
-            if not "Others" in timesheet:
-                timesheet["Others"] = {}
-                day = [timedelta(0)]*7
-                timesheet["Others"]["Others"] = day
-            timesheet["Others"]["Others"][weekday] += duration
-
+        duration = (duration + preparation_time)/len(tempdeliverable)
+        for customer in tempcust:
+            if not customer in timesheet:
+                timesheet[customer] = {}
+            for deliverable in tempdeliverable:
+                if not deliverable in timesheet[customer]:
+                    day = [timedelta(0)]*7
+                    timesheet[customer][deliverable] = day
+                timesheet[customer][deliverable][weekday] += duration
 
 # Round all categories of all customers.
     for customer in timesheet:
