@@ -70,7 +70,7 @@ If you don't have a Microsoft account, there are a couple of options to get a fr
 1. Run the following command in your CLI to start the application.
 
     ```Shell
-    python manage.py runserver
+    python3 manage.py runserver
     ```
 
 1. Open a browser and browse to `http://localhost:8000`.
