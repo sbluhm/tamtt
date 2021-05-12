@@ -105,7 +105,9 @@ def calendar(request):
         if len(tempcust) < 1:
             tempcust.append("Others")
 
-        duration = (duration + preparation_time)/len(tempdeliverable)
+        if not event['responseStatus']['response'] == "none":
+            duration += preparation_time
+        duration = duration/len(tempdeliverable)
         for customer in tempcust:
             if not customer in timesheet:
                 timesheet[customer] = {}
