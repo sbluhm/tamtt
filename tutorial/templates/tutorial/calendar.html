@@ -13,6 +13,7 @@
 
       table td + td {
 	border-left:1px solid Gainsboro; 
+	vertical-align: middle;
       }
 
       tr:nth-of-type(odd) {
@@ -31,7 +32,7 @@
 	      <label for="week">Choose a week:</label>
               <select name="week" id="week" autocomplete="off" onchange='this.form.submit()'>
               {% for week in calendar  %}
-                <option value="{{ week.0 }}" {% if week.2 %}selected="selected"{%endif%}>{{ week.1 }}</option>
+                <option value="{{ week.7 }}" {% if week.9 %}selected="selected"{%endif%}>{{ week.8 }}</option>
               {% endfor %}
               </select>
 	      <noscript><input type="submit" value="Submit"></noscript>
@@ -41,27 +42,50 @@
 	   <th scope="col">&nbsp;</th>
 	   <th scope="col">&nbsp;</th>
 	   <th scope="col">&nbsp;</th>
-	   <th scope="col">&nbsp;</th>
-	   <th scope="col" colspan="3" >Time values in decimal</th>
+	   <th scope="col" colspan="4" >Time values in decimal</th>
 	   <th scope="col">&nbsp;</th>
          </tr>
+
        </thead>
        <tbody>
-
-       {% for customer in customer.items %}
-
        <tr>
-	   <th bgcolor="Gainsboro">{{ customer.0 }}</th>
-	   <th bgcolor="Gainsboro">Sat</th>
-	   <th bgcolor="Gainsboro">Sun</th>
-           <th bgcolor="Gainsboro">Mon</th>
-	   <th bgcolor="Gainsboro">Tue</th>
-	   <th bgcolor="Gainsboro">Wed</th>
-           <th bgcolor="Gainsboro">Thu</th>
-           <th bgcolor="Gainsboro">Fri</th>
-	   <th bgcolor="Gainsboro">Sum</th>
+               <td bgcolor="Gainsboro">&nbsp;</td>
+               <td bgcolor="Gainsboro">SAT</br>{{ currentweek.0|month_day }}</td>
+               <td bgcolor="Gainsboro">SUN</br>{{ currentweek.1|month_day }}</td>
+               <td bgcolor="Gainsboro">MON</br>{{ currentweek.2|month_day }}</td>
+               <td bgcolor="Gainsboro">TUE</br>{{ currentweek.3|month_day }}</td>
+               <td bgcolor="Gainsboro">WED</br>{{ currentweek.4|month_day }}</td>
+               <td bgcolor="Gainsboro">THU</br>{{ currentweek.5|month_day }}</td>
+               <td bgcolor="Gainsboro">FRI</br>{{ currentweek.6|month_day }}</td>
+               <td bgcolor="Gainsboro">SUM</td>
        </tr>
-  {% for entry in customer.1.items  %}
+
+       {% for customername,customertime in customer.items %}
+       <tr>
+
+	   <th bgcolor="Gainsboro">{{ customername }}</th>
+	   <th bgcolor="Gainsboro">{{ customer_totaltime|get_dict_value:customername|get_dict_value:5|duration_decimal }}</th>
+	   <th bgcolor="Gainsboro">{{ customer_totaltime|get_dict_value:customername|get_dict_value:6|duration_decimal }}</th>
+	   <th bgcolor="Gainsboro">{{ customer_totaltime|get_dict_value:customername|get_dict_value:1|duration_decimal }}</th>
+	   <th bgcolor="Gainsboro">{{ customer_totaltime|get_dict_value:customername|get_dict_value:2|duration_decimal }}</th>
+	   <th bgcolor="Gainsboro">{{ customer_totaltime|get_dict_value:customername|get_dict_value:3|duration_decimal }}</th>
+	   <th bgcolor="Gainsboro">{{ customer_totaltime|get_dict_value:customername|get_dict_value:4|duration_decimal }}</th>
+	   <th bgcolor="Gainsboro">{{ customer_totaltime|get_dict_value:customername|get_dict_value:5|duration_decimal }}</th>
+	   <th bgcolor="Gainsboro">{{ customer_totaltime|get_dict_value:customername|get_dict_value:7|duration_decimal }}</th>
+
+       </tr>
+       <tr>
+               <td bgcolor="Gainsboro">&nbsp;</td>
+               <td bgcolor="Gainsboro">SAT</td>
+               <td bgcolor="Gainsboro">SUN</td>
+               <td bgcolor="Gainsboro">MON</td>
+               <td bgcolor="Gainsboro">TUE</td>
+               <td bgcolor="Gainsboro">WED</td>
+               <td bgcolor="Gainsboro">THU</td>
+               <td bgcolor="Gainsboro">FRI</td>
+               <td bgcolor="Gainsboro">SUM</td>
+       </tr>
+  {% for entry in customertime.items  %}
   <tr>
 	  <td>{{ entry.0 }} </td>
                  <td bgcolor="Gainsboro">{{ entry.1.5|duration_decimal }}</td>
@@ -74,9 +98,12 @@
 		 <td>{{ entry.1.7|duration_decimal }}</td>
         </tr>
 	  {% endfor %}
+	  <tr><td colspan="9">&nbsp;</td>
+       </tr>
+
   {% endfor %}
   <tr>
-	  <td><b>TOTAL ({{ totaltime.7|duration_decimal }} hrs):</b> </td>
+	  <td><b>TOTAL:</b> </td>
                  <td bgcolor="Gainsboro"><b>{{ totaltime.5|duration_decimal }}</b></td>
                  <td bgcolor="Gainsboro"><b>{{ totaltime.6|duration_decimal }}</b></td>
                  <td><b>{{ totaltime.0|duration_decimal }}</b></td>
@@ -84,7 +111,7 @@
                  <td><b>{{ totaltime.2|duration_decimal }}</b></td>
                  <td><b>{{ totaltime.3|duration_decimal }}</b></td>
                  <td><b>{{ totaltime.4|duration_decimal }}</b></td>
-		 <td><b>{{ totaltime.7|duration_decimal }}</b></td>
+		 <td bgcolor="Gainsboro"><b>{{ totaltime.7|duration_decimal }}</b></td>
         </tr>
 
   </tbody>

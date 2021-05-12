@@ -86,6 +86,7 @@ def calendar(request):
   timesheet = {}
   totaltime = [timedelta(0)]*8 # 8 will be the week total
   week_totaltime = timedelta(0)
+  customer_totaltime = {}
 
   if events:
     # Step one, split out and merge customers and deliverables
@@ -108,10 +109,10 @@ def calendar(request):
         for customer in tempcust:
             if not customer in timesheet:
                 timesheet[customer] = {}
+                customer_totaltime[customer] = [timedelta(0)]*8
             for deliverable in tempdeliverable:
                 if not deliverable in timesheet[customer]:
-                    day = [timedelta(0)]*8
-                    timesheet[customer][deliverable] = day
+                    timesheet[customer][deliverable] = [timedelta(0)]*8
                 timesheet[customer][deliverable][weekday] += duration
 
 # Round all categories of all customers.
@@ -123,6 +124,9 @@ def calendar(request):
                 timesheet[customer][deliverable][weekday] = new_duration
                 timesheet[customer][deliverable][7] += new_duration
                 totaltime[weekday] += new_duration
+                week_totaltime += new_duration
+                customer_totaltime[customer][weekday] += new_duration
+                customer_totaltime[customer][7] += new_duration 
 
     totaltime[7] = week_totaltime
 
@@ -131,19 +135,23 @@ def calendar(request):
     start_date = weekday - timedelta(days=weekday.weekday()+2) # Saturday before input_week
     end_date = start_date + timedelta(days=6)
     calendar = []
+    currentweek = []
     selected_weekday=datetime.strptime(selected_date, "%Y-%m-%d")
     selected_start_date = selected_weekday - timedelta(days=selected_weekday.weekday()+2)
     if selected_weekday.weekday() >= 5:
       selected_start_date = selected_start_date + timedelta(days=7)
 
     for i in range(5):
-        week = ["","",False] # 0 = weekstart, 1 = week text
+        week = ["","","","","","","","","",False] # 0-6 = date, 7 = start date text, 8  = week text, 9 = current week
         loop_start_date = start_date - timedelta(days=7*i) # Saturday before input_week
         loop_end_date = loop_start_date + timedelta(days=6)
-        week[0] = loop_start_date.strftime("%Y-%m-%d")
-        week[1] = loop_start_date.strftime("%Y-%m-%d") + " - " + loop_end_date.strftime("%Y-%m-%d")
+        for j in range(7):
+            week[j] = loop_start_date + timedelta(days=j)
+        week[7] = week[0].strftime("%Y-%m-%d")
+        week[8] = loop_start_date.strftime("%Y-%m-%d") + " - " + loop_end_date.strftime("%Y-%m-%d")
         if loop_start_date == selected_start_date:
-            week[2] = True
+            week[9] = True
+            currentweek = week
         calendar.append(week)
 
 # Sort data
@@ -153,10 +161,13 @@ def calendar(request):
         for w in sorted(timesheet[v].keys()):
             sorted_timesheet[v][w] = timesheet[v][w]
 
+    print(customer_totaltime)
 
 # Pass data to template
-    context['calendar'] = calendar
+    context['calendar'] = calendar                          # For week picker
+    context['currentweek'] = currentweek
     context['totaltime'] = totaltime
+    context['customer_totaltime'] = customer_totaltime 
     context['customer'] = sorted_timesheet
 
   return render(request, 'tutorial/calendar.html', context)
