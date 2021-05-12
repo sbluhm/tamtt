@@ -40,7 +40,7 @@ def get_calendar_events(token, input_date=datetime.now().strftime("%Y-%m-%d")):
   # Configure query parameters to
   # modify the results
   query_params = {
-    '$select': 'subject,start,end,categories',
+    '$select': 'subject,start,end,categories,responseStatus',
     '$orderby': 'start/DateTime DESC',
     '$top': 500,
     '$filter': "showAs eq 'busy'"
