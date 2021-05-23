@@ -13,5 +13,6 @@ urlpatterns = [
   path('signout', views.sign_out, name='signout'),
   path('callback', views.callback, name='callback'),
   path('calendar', views.calendar, name='calendar'),
+  path('calendar/download', views.calendar_download, name='calendar'),
   path('presence', views.presence, name='presence'),
 ]

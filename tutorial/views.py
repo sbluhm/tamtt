@@ -9,6 +9,16 @@ from tutorial.graph_helper import get_user, get_calendar_events, get_presence_ev
 import dateutil.parser
 from datetime import datetime, timedelta
 from math import ceil
+import json
+import os
+
+def duration_decimal(td):
+    total_seconds = int(td.total_seconds())
+    hours = f'{total_seconds // 3600}'
+    minutes = f'{(total_seconds % 3600) // 36:02d}'
+    return '{}.{}'.format(hours, minutes)
+
+
 
 # <HomeViewSnippet>
 def home(request):
@@ -70,7 +80,7 @@ def callback(request):
 
 
 # <CalendarViewSnippet>
-def calendar(request):
+def calendar(request, textout = None):
   preparation_time = timedelta(minutes=10)
   context = initialize_context(request)
 
@@ -132,9 +142,19 @@ def calendar(request):
 
     totaltime[7] = week_totaltime
 
+# convert timedelta to decimal
+    for customer in timesheet:
+        for deliverable in timesheet[customer]:
+            for weekday in range(8):
+                timesheet[customer][deliverable][weekday] = duration_decimal(timesheet[customer][deliverable][weekday])
+
+
 # Week Picker
     weekday = datetime.strptime( datetime.now().strftime("%Y-%m-%d"), "%Y-%m-%d")
-    start_date = weekday - timedelta(days=weekday.weekday()+2) # Saturday before input_week
+    if weekday.weekday() < 5:
+        start_date = weekday - timedelta(days=weekday.weekday()+2) # Saturday before input_week
+    else:
+        start_date = weekday - timedelta(days=weekday.weekday()-5) # Saturday before input_week
     end_date = start_date + timedelta(days=6)
     calendar = []
     currentweek = []
@@ -163,7 +183,6 @@ def calendar(request):
         for w in sorted(timesheet[v].keys()):
             sorted_timesheet[v][w] = timesheet[v][w]
 
-    print(customer_totaltime)
 
 # Pass data to template
     context['calendar'] = calendar                          # For week picker
@@ -171,9 +190,35 @@ def calendar(request):
     context['totaltime'] = totaltime
     context['customer_totaltime'] = customer_totaltime 
     context['customer'] = sorted_timesheet
+    fulldata = [currentweek[7], sorted_timesheet, currentweek[6].strftime("%Y-%m-%d"),currentweek[6].strftime("%m/%d/%Y"),currentweek[0].strftime("%a, %d %B %Y 00:00:00 GMT"), currentweek[6].strftime("%a, %d %B %Y 00:00:00 GMT")]
+    if textout:
+        print("Textout triggert")
+        return json.dumps(fulldata)
 
   return render(request, 'tutorial/calendar.html', context)
 # </CalendarViewSnippet>
+
+# <CalenderViewDownload>
+def calendar_download(request):
+    json=calendar(request, True)
+    # Define Django project base directory
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    # Define the full file path
+    filepath = BASE_DIR + '/tutorial/salesforceimport.sh'
+    # Open the file for reading content
+    path = open(filepath, 'r')
+    # Enrich script with timesheet JSON data
+    shellscript = path.read().replace("TAMTT_VARIABLE_TIMESHEET_JSON", json)
+    path.close()
+    # Set the return value of the HttpResponse
+    response = HttpResponse(shellscript, content_type='application/x-sh')
+    # Set the HTTP header for sending to browser
+    filename = json[2:12] + '.sh'
+    response['Content-Disposition'] = "attachment; filename=%s" % filename
+    # Return the response value
+    return response
+# </CalenderViewDownload>
+
 
 # <PresenceViewSnippet>
 def presence(request):
