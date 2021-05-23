@@ -1,4 +1,12 @@
+#!/bin/bash
+URL='https://XXXXX--pse.na156.visual.force.com'
+
+
 INPUT=''
+
+if [ "" == "`which jq`" ]; then echo "jq not found"; if [ -n "`which apt-get`" ]; then sudo apt-get -y install jq ; elif [ -n "`which yum`" ]; then sudo yum -y install jq ; fi ; fi
+if [ "" == "`which curl`" ]; then echo "jq not found"; if [ -n "`which apt-get`" ]; then sudo apt-get -y install curl ; elif [ -n "`which yum`" ]; then sudo yum -y install curl ; fi ; fi
+
 
 echo "Paste SID/Cookie/Curl/Header etc and confirm completion by pressing CTRL+D"
 echo ""
@@ -24,7 +32,7 @@ echo ""
 SID=$( printf "%s\n" "${INPUT#*sid}" )
 SID=$( cut -d ";" -f1 <<< $SID| cut -d "," -f1 | sed s/\"//g | cut -c 2- )
 echo ""
-echo $SID
+echo "Fetching Salesforce data..."
 
 
 INFILE='TAMTT_VARIABLE_TIMESHEET_JSON'
@@ -35,7 +43,6 @@ ENDDATEUS=`echo $INFILE | jq -r '.[3]'`
 ENDDATESTUPID=`echo $INFILE | jq -r '.[5]'`
 
 
-URL='https://XXXXX--pse.na156.visual.force.com'
 DRLIST=`echo $INFILE | jq -c '.[1] |keys' | grep -o '\bDR[0-9]\{7\}\b' | xargs`
 
 
@@ -225,4 +232,5 @@ curl ${URL}/apexremote \
 
 head -c 100 tmp/uploadreply
 cp $0 tmp
+echo ""
 echo "Tranfer completed. Verify status 200 above."
