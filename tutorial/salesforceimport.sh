@@ -1,3 +1,4 @@
+#!/bin/bash
 URL='https://XXXXX--pse.na156.visual.force.com'
 
 
