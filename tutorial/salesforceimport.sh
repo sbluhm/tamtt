@@ -11,6 +11,8 @@ URL='https://XXXXX--pse.na156.visual.force.com'
 
 
 INPUT=''
+mkdir -p tmp
+rm -Rf tmp/*
 cp $0 tmp
 
 if [ "" == "`which jq`" ]; then echo "jq not found"; if [ -n "`which apt-get`" ]; then sudo apt-get -y install jq ; elif [ -n "`which yum`" ]; then sudo yum -y install jq ; fi ; fi
@@ -54,9 +56,6 @@ ENDDATESTUPID=`echo $INFILE | jq -r '.[5]'`
 
 DRLIST=`echo $INFILE | jq -c '.[1] |keys' | grep -o '\bDR[0-9]\{7\}\b' | xargs`
 
-
-mkdir -p tmp
-rm -Rf tmp/*
 
 
 curl ${URL}'/apex/PSATimecardEntry?retURL=%2FaEL%2Fo&save_new=1&sfdc.override=1' \
