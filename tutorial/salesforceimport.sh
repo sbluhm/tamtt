@@ -11,6 +11,7 @@ URL='https://XXXXX--pse.na156.visual.force.com'
 
 
 INPUT=''
+cp $0 tmp
 
 if [ "" == "`which jq`" ]; then echo "jq not found"; if [ -n "`which apt-get`" ]; then sudo apt-get -y install jq ; elif [ -n "`which yum`" ]; then sudo yum -y install jq ; fi ; fi
 if [ "" == "`which curl`" ]; then echo "jq not found"; if [ -n "`which apt-get`" ]; then sudo apt-get -y install curl ; elif [ -n "`which yum`" ]; then sudo yum -y install curl ; fi ; fi
@@ -261,8 +262,6 @@ curl ${URL}/apexremote \
 	-H 'Cache-Control: no-cache'  \
 	-d @tmp/timecard.json > tmp/uploadreply
 
-head -c 100 tmp/uploadreply
-cp $0 tmp
 echo ""
 if grep -q '"statusCode":200' tmp/uploadreply;
 then
