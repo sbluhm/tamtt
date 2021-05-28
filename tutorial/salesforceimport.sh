@@ -72,6 +72,9 @@ curl ${URL}'/apex/PSATimecardEntry?retURL=%2FaEL%2Fo&save_new=1&sfdc.override=1'
 TAMTT_VARIABLE_RESOURCEID=`cat tmp/PSATimecardEntry.html | grep currentResourceId | sed -n "s/^.*'\(.*\)'.*$/\1/ p"`
 # Fix vim '"
 
+[ -z "$TAMTT_VARIABLE_RESOURCEID" ] && echo "Wrong data detected. Is the sid correct? " && exit 1
+
+
 # GET DATA
 
 ## Create timesheet...
@@ -261,7 +264,12 @@ curl ${URL}/apexremote \
 head -c 100 tmp/uploadreply
 cp $0 tmp
 echo ""
-echo "Tranfer completed. Verify status 200 above."
+if grep -q '"statusCode":200' tmp/uploadreply;
+then
+	echo "Tranfer completed. Verify transferred data."
+else
+	echo "Upload failed. Verify transferred data."
+fi
 
 # Windows Code below to start this script as bash
 fi
