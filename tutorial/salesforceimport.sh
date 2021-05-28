@@ -188,7 +188,7 @@ do
 
 		TASK=`sed "s/[^[:alpha:]]//g" <<< $line`;
 		[ -z "$TASK" ] && continue;
-		TASKID=`cat tmp/${DR}/tasks | jq -r '.[].result.data[] | select(.Name|gsub("[^[:alpha:]]";"")|test("'"$TASK"'")) | .Id'`;
+		TASKID=`cat tmp/${DR}/tasks | jq -r '.[].result.data[] | select(.Name|gsub("[^[:alpha:]]";"")|test("'"$TASK"'"; "i")) | .Id'`;
 		[ -z "$TASKID" ] && continue;
                 SAT=`echo $INFILE | jq -r '.[1] | to_entries[] | select(.key|contains("'"$DR"'") ) | .value."'"$( echo $line | xargs)"'"[5]'`
 		SUN=`echo $INFILE | jq -r '.[1] | to_entries[] | select(.key|contains("'"$DR"'") ) | .value."'"$( echo $line | xargs)"'"[6]'`
