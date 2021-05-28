@@ -213,7 +213,7 @@ def calendar_download(request):
     # Set the return value of the HttpResponse
     response = HttpResponse(shellscript, content_type='application/x-sh')
     # Set the HTTP header for sending to browser
-    filename = json[2:12] + '.sh'
+    filename = json[2:12] + '.cmd'
     response['Content-Disposition'] = "attachment; filename=%s" % filename
     # Return the response value
     return response

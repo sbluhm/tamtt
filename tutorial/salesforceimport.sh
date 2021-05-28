@@ -1,4 +1,12 @@
-#!/bin/bash
+:<<"::CMDLITERAL"
+@ECHO OFF
+GOTO :CMDSCRIPT
+::CMDLITERAL
+
+# Allows execution from Windows with bash. Windows Code at the end.
+if :; then
+
+
 URL='https://XXXXX--pse.na156.visual.force.com'
 
 
@@ -234,3 +242,12 @@ head -c 100 tmp/uploadreply
 cp $0 tmp
 echo ""
 echo "Tranfer completed. Verify status 200 above."
+
+# Windows Code below to start this script as bash
+fi
+exit $?
+
+
+:CMDSCRIPT
+bash %~nx0
+exit /b
