@@ -19,26 +19,10 @@ if [ "" == "`which jq`" ]; then echo "jq not found"; if [ -n "`which apt-get`" ]
 if [ "" == "`which curl`" ]; then echo "jq not found"; if [ -n "`which apt-get`" ]; then sudo apt-get -y install curl ; elif [ -n "`which yum`" ]; then sudo yum -y install curl ; fi ; fi
 
 
-echo "Paste SID/Cookie/Curl/Header etc and confirm completion by pressing CTRL+D"
+echo "Paste SID/Cookie/Curl/Header etc and confirm completion by pressing CTRL+D (twice)"
 echo "Option + ⌘ + J (on Safari), or Shift + CTRL + E (on Firefox)."
-while true; do
-    line=''
+INPUT=$(</dev/stdin)
 
-    while IFS= read -r -N 1 ch; do
-        case "$ch" in
-            $'\04') got_eot=1   ;&
-            $'\n')  break       ;;
-            *)      line="$line$ch" ;;
-        esac
-    done
-
-    INPUT="$INPUT $line"
-
-    if (( got_eot )); then
-        break
-    fi
-done
-#echo $INPUT
 echo ""
 SID=$( printf "%s\n" "${INPUT#*sid}" )
 SID=$( cut -d ";" -f1 <<< $SID| cut -d "," -f1 | sed s/\"//g | cut -c 2- )
