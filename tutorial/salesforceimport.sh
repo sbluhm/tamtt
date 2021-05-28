@@ -17,7 +17,7 @@ if [ "" == "`which curl`" ]; then echo "jq not found"; if [ -n "`which apt-get`"
 
 
 echo "Paste SID/Cookie/Curl/Header etc and confirm completion by pressing CTRL+D"
-echo ""
+echo "Option + ⌘ + J (on Safari), or Shift + CTRL + E (on Firefox)."
 while true; do
     line=''
 
@@ -59,6 +59,7 @@ rm -Rf tmp/*
 
 
 curl ${URL}'/apex/PSATimecardEntry?retURL=%2FaEL%2Fo&save_new=1&sfdc.override=1' \
+	  --silent \
           --compressed \
           --globoff \
           -H "Referer: ${URL}" \
@@ -71,6 +72,9 @@ curl ${URL}'/apex/PSATimecardEntry?retURL=%2FaEL%2Fo&save_new=1&sfdc.override=1'
 TAMTT_VARIABLE_RESOURCEID=`cat tmp/PSATimecardEntry.html | grep currentResourceId | sed -n "s/^.*'\(.*\)'.*$/\1/ p"`
 # Fix vim '"
 
+[ -z "$TAMTT_VARIABLE_RESOURCEID" ] && echo "Wrong data detected. Is the sid correct? " && exit 1
+
+
 # GET DATA
 
 ## Create timesheet...
@@ -79,6 +83,7 @@ METHOD="getRecentProjectAssignemnts"
 CSRF=`grep VFRM.RemotingProviderImpl tmp/PSATimecardEntry.html | sed 's/.*VFRM.RemotingProviderImpl(//' | sed 's/));$//' | jq -r '.actions."'$ACTION'".ms[] | select(.name == "'$METHOD'") | .csrf'`
 
 curl ${URL}/apexremote \
+	--silent \
         --compressed \
         -H "Referer: ${URL}/apex/PSATimecardEntry?retURL=%2FaEL%2Fo&save_new=1&sfdc.override=1" \
         -H 'X-User-Agent: Visualforce-Remoting' \
@@ -112,6 +117,7 @@ do
 	CSRF=`grep VFRM.RemotingProviderImpl tmp/PSATimecardEntry.html | sed 's/.*VFRM.RemotingProviderImpl(//' | sed 's/));$//' | jq -r '.actions."'$ACTION'".ms[] | select(.name == "'$METHOD'") | .csrf'`
 	echo '{"action":"'$ACTION'","method":"'$METHOD'","data":[{"projectId":"'${TAMTT_VARIABLE_PROJECTID}'","resourceId":"'${TAMTT_VARIABLE_RESOURCEID}'","startDate":"'${STARTDATESTUPID}'","endDate":"'${ENDDATESTUPID}'","assignmentId":"'${TAMTT_VARIABLE_ASSIGNMENTID}'"}],"type":"rpc","tid":12,"ctx":{"csrf":"'${CSRF}'","vid":"06614000001UYes","ns":"pse","ver":41}}' > tmp/${DR}/tmptasks
 	curl ${URL}/apexremote \
+	  --silent \
           --compressed \
 	  --globoff \
           -H "Referer: ${URL}apex/PSATimecardEntry?retURL=%2FaEL%2Fo&save_new=1&sfdc.override=1" \
@@ -131,6 +137,7 @@ do
         METHOD="getAssignmentDetails"
         CSRF=`grep VFRM.RemotingProviderImpl tmp/PSATimecardEntry.html | sed 's/.*VFRM.RemotingProviderImpl(//' | sed 's/));$//' | jq -r '.actions."'$ACTION'".ms[] | select(.name == "'$METHOD'") | .csrf'`
 	curl ${URL}/apexremote \
+	  --silent \
           --compressed \
           -H "Referer: ${URL}/apex/PSATimecardEntry?retURL=%2FaEL%2Fo&save_new=1&sfdc.override=1" \
           -H 'X-User-Agent: Visualforce-Remoting' \
@@ -144,9 +151,24 @@ do
           --data-raw '{"action":"pse.SenchaTCController","method":"getAssignmentDetails","data":["'${TAMTT_VARIABLE_ASSIGNMENTID}'","'${ENDDATEUS}'","'${RESOURCEID}'"],"type":"rpc","tid":27,"ctx":{"csrf":"'${CSRF}'","vid":"06614000001UYes","ns":"pse","ver":41}}' > tmp/${DR}/milestoneid
 
 	TAMTT_VARIABLE_MILESTONEID=$(cat tmp/${DR}/milestoneid | jq -r '.[].result' | sed s/\\\\//g | jq -r '[.[].milestones[]] | max_by(.name).id')
+	SUMSAT=`echo $INFILE | jq -r '.[6] | to_entries[] | select(.key|contains("'"$DR"'") )  | .value[5]'`
+	SUMSUN=`echo $INFILE | jq -r '.[6] | to_entries[] | select(.key|contains("'"$DR"'") )  | .value[6]'`
+	SUMMON=`echo $INFILE | jq -r '.[6] | to_entries[] | select(.key|contains("'"$DR"'") )  | .value[0]'`
+	SUMTUE=`echo $INFILE | jq -r '.[6] | to_entries[] | select(.key|contains("'"$DR"'") )  | .value[1]'`
+	SUMWED=`echo $INFILE | jq -r '.[6] | to_entries[] | select(.key|contains("'"$DR"'") )  | .value[2]'`
+	SUMTHU=`echo $INFILE | jq -r '.[6] | to_entries[] | select(.key|contains("'"$DR"'") )  | .value[3]'`
+	SUMFRI=`echo $INFILE | jq -r '.[6] | to_entries[] | select(.key|contains("'"$DR"'") )  | .value[4]'`
+
 
 	TIMECARDHEAD='\"timecard\":{\"Assignment__c\":\"TAMTT_VARIABLE_ASSIGNMENTID\",\"Resource__c\":\"TAMTT_VARIABLE_RESOURCEID\",\"Project__c\":\"TAMTT_VARIABLE_PROJECTID\",\"Start_Date__c\":\"TAMTT_VARIABLE_STARTDATE\",\"End_Date__c\":\"TAMTT_VARIABLE_ENDDATE\",\"Billable__c\":false,
 \"Project__r\":{\"attributes\":{\"type\":\"pse__Proj__c\",\"url\":\"/services/data/v51.0/sobjects/pse__Proj__c/TAMTT_VARIABLE_PROJECTID\"},\"Account__c\":\"TAMTT_VARIABLE_ACCOUNTID\",\"Id\":\"TAMTT_VARIABLE_PROJECTID\",\"Account__r\":{\"attributes\":{\"type\":\"Account\",\"url\":\"/services/data/v51.0/sobjects/Account/TAMTT_VARIABLE_ACCOUNTID\"},\"Id\":\"TAMTT_VARIABLE_ACCOUNTID\",\"RecordTypeId\":\"0123000000007NBAAY\"}},
+\"Saturday_Hours__c\":'$SUMSAT',\"Saturday_Notes__c\":\"Automatic submission by TAMTT\",
+\"Sunday_Hours__c\":'$SUMSUN',\"Sunday_Notes__c\":\"Automatic submission by TAMTT\",
+\"Monday_Hours__c\":'$SUMMON',\"Monday_Notes__c\":\"Automatic submission by TAMTT\",
+\"Tuesday_Hours__c\":'$SUMTUE',\"Tuesday_Notes__c\":\"Automatic submission by TAMTT\",
+\"Wednesday_Hours__c\":'$SUMWED',\"Wednesday_Notes__c\":\"Automatic submission by TAMTT\",
+\"Thursday_Hours__c\":'$SUMTHU',\"Thursday_Notes__c\":\"Automatic submission by TAMTT\",
+\"Friday_Hours__c\":'$SUMFRI',\"Friday_Notes__c\":\"Automatic submission by TAMTT\",
 \"Assignment__r\":{\"attributes\":{\"type\":\"pse__Assignment__c\",\"url\":\"/services/data/v51.0/sobjects/pse__Assignment__c/TAMTT_VARIABLE_ASSIGNMENTID\"},\"Id\":\"TAMTT_VARIABLE_ASSIGNMENTID\"},
 \"Milestone__c\":\"TAMTT_VARIABLE_MILESTONEID\"},\"taskTimeDetails\":{\"taskTimes\":['
 
@@ -169,7 +191,7 @@ do
 
 		TASK=`sed "s/[^[:alpha:]]//g" <<< $line`;
 		[ -z "$TASK" ] && continue;
-		TASKID=`cat tmp/${DR}/tasks | jq -r '.[].result.data[] | select(.Name|gsub("[^[:alpha:]]";"")|test("'"$TASK"'")) | .Id'`;
+		TASKID=`cat tmp/${DR}/tasks | jq -r '.[].result.data[] | select(.Name|gsub("[^[:alpha:]]";"")|test("'"$TASK"'"; "i")) | .Id'`;
 		[ -z "$TASKID" ] && continue;
                 SAT=`echo $INFILE | jq -r '.[1] | to_entries[] | select(.key|contains("'"$DR"'") ) | .value."'"$( echo $line | xargs)"'"[5]'`
 		SUN=`echo $INFILE | jq -r '.[1] | to_entries[] | select(.key|contains("'"$DR"'") ) | .value."'"$( echo $line | xargs)"'"[6]'`
@@ -226,6 +248,7 @@ cat tmp/body tmp/datawip
 echo "}") > tmp/timecard.json
 
 curl ${URL}/apexremote \
+	--silent \
 	--compressed \
 	-H "Referer: ${URL}/apex/PSATimecardEntry?retURL=%2FaEL%2Fo&save_new=1&sfdc.override=1" \
 	-H 'X-User-Agent: Visualforce-Remoting' \
@@ -241,7 +264,12 @@ curl ${URL}/apexremote \
 head -c 100 tmp/uploadreply
 cp $0 tmp
 echo ""
-echo "Tranfer completed. Verify status 200 above."
+if grep -q '"statusCode":200' tmp/uploadreply;
+then
+	echo "Tranfer completed. Verify transferred data."
+else
+	echo "Upload failed. Verify transferred data."
+fi
 
 # Windows Code below to start this script as bash
 fi

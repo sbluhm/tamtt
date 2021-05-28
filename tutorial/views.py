@@ -147,6 +147,8 @@ def calendar(request, textout = None):
         for deliverable in timesheet[customer]:
             for weekday in range(8):
                 timesheet[customer][deliverable][weekday] = duration_decimal(timesheet[customer][deliverable][weekday])
+        for weekday in range(8):
+            customer_totaltime[customer][weekday] = duration_decimal(customer_totaltime[customer][weekday])
 
 
 # Week Picker
@@ -190,7 +192,7 @@ def calendar(request, textout = None):
     context['totaltime'] = totaltime
     context['customer_totaltime'] = customer_totaltime 
     context['customer'] = sorted_timesheet
-    fulldata = [currentweek[7], sorted_timesheet, currentweek[6].strftime("%Y-%m-%d"),currentweek[6].strftime("%m/%d/%Y"),currentweek[0].strftime("%a, %d %B %Y 00:00:00 GMT"), currentweek[6].strftime("%a, %d %B %Y 00:00:00 GMT")]
+    fulldata = [currentweek[7], sorted_timesheet, currentweek[6].strftime("%Y-%m-%d"),currentweek[6].strftime("%m/%d/%Y"),currentweek[0].strftime("%a, %d %B %Y 00:00:00 GMT"), currentweek[6].strftime("%a, %d %B %Y 00:00:00 GMT"),customer_totaltime]
     if textout:
         print("Textout triggert")
         return json.dumps(fulldata)

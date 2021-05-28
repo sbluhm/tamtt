@@ -6,7 +6,7 @@ The salesforce script is a bash script that contains all relevant code to push a
 
 The project/assignment is matched by a "DR" number which consists of the characters DR and 7 digits. So both, the Salesforce assignment and the Outlook category must contain that pattern. You can modify it in the bash script if required.
 
-Tasks are matched by the character sequence. All non-alphabetical characters are stripped. The rest is then matched. So the Outlook categories should have the same character sequence as in Salesforce.
+Tasks are matched by the character sequence. All non-alphabetical characters are stripped. The rest is then tested to be contained within Salesforce tasks (so subsections. Not complete matches).
 
 ## Running the script
 
