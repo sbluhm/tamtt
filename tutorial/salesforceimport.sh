@@ -17,7 +17,7 @@ if [ "" == "`which curl`" ]; then echo "jq not found"; if [ -n "`which apt-get`"
 
 
 echo "Paste SID/Cookie/Curl/Header etc and confirm completion by pressing CTRL+D"
-echo ""
+echo "Option + ⌘ + J (on Safari), or Shift + CTRL + E (on Firefox)."
 while true; do
     line=''
 
