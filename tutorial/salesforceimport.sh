@@ -278,4 +278,5 @@ exit $?
 
 :CMDSCRIPT
 bash %~nx0
+pause
 exit /b
