@@ -88,15 +88,15 @@
        </tr>
   {% for entry in customertime.items  %}
   <tr>
-	  <td>{{ entry.0 }} </td>
+	  <td{% if entry.0 == "Others" %} bgcolor="PaleVioletRed" {% endif %}>{{ entry.0 }} </td>
                  <td bgcolor="Gainsboro">{{ entry.1.5 }}</td>
                  <td bgcolor="Gainsboro">{{ entry.1.6 }}</td>
-                 <td>{{ entry.1.0 }}</td>
-                 <td>{{ entry.1.1 }}</td>
-                 <td>{{ entry.1.2 }}</td>
-                 <td>{{ entry.1.3 }}</td>
-                 <td>{{ entry.1.4 }}</td>
-                 <td>{{ entry.1.7 }}</td>
+                 <td{% if entry.0 == "Others" %} bgcolor="PaleVioletRed" {% endif %}>{{ entry.1.0 }}</td>
+                 <td{% if entry.0 == "Others" %} bgcolor="PaleVioletRed" {% endif %}>{{ entry.1.1 }}</td>
+                 <td{% if entry.0 == "Others" %} bgcolor="PaleVioletRed" {% endif %}>{{ entry.1.2 }}</td>
+                 <td{% if entry.0 == "Others" %} bgcolor="PaleVioletRed" {% endif %}>{{ entry.1.3 }}</td>
+                 <td{% if entry.0 == "Others" %} bgcolor="PaleVioletRed" {% endif %}>{{ entry.1.4 }}</td>
+                 <td{% if entry.0 == "Others" %} bgcolor="PaleVioletRed" {% endif %}>{{ entry.1.7 }}</td>
         </tr>
 	  {% endfor %}
 	  <tr><td colspan="9">&nbsp;</td>
