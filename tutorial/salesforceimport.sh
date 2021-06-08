@@ -24,8 +24,9 @@ echo "Option + ⌘ + J (on Safari), or Shift + CTRL + E (on Firefox)."
 INPUT=$(</dev/stdin)
 
 echo ""
+INPUT=$(  tr '\n' ' ' <<< $INPUT )
 SID=$( printf "%s\n" "${INPUT#*sid}" )
-SID=$( cut -d ";" -f1 <<< $SID| cut -d "," -f1 | sed s/\"//g | cut -c 2- )
+SID=$( cut -d ";" -f1 <<< $SID| cut -d "," -f1 | sed s/\"//g | cut -c 2- | sed 's/\\u0021/\!/' )
 echo ""
 echo "Fetching Salesforce data..."
 
