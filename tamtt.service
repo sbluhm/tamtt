@@ -1,0 +1,11 @@
+[Unit]
+Description = TAMTT Service. Internal queries can be directed to port 8000.
+After = network.target
+
+[Service]
+WorkingDirectory=/opt/tamtt
+ExecStart = python3 /opt/tamtt/manage.py runserver 0.0.0.0:8000
+
+[Install]
+WantedBy = multi-user.target
+
