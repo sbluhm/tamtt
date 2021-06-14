@@ -1,11 +1,8 @@
-#TODO: Sort categories alphabetically.
-#TODO: Handle parallel meetings sensibly.
-
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
-from tutorial.auth_helper import get_sign_in_url, get_token_from_code, store_token, store_user, remove_user_and_token, get_token
-from tutorial.graph_helper import get_user, get_calendar_events, get_presence_events
+from tamtt.auth_helper import get_sign_in_url, get_token_from_code, store_token, store_user, remove_user_and_token, get_token
+from tamtt.graph_helper import get_user, get_calendar_events, get_presence_events
 import dateutil.parser
 from datetime import datetime, timedelta
 from math import ceil
@@ -24,7 +21,7 @@ def duration_decimal(td):
 def home(request):
   context = initialize_context(request)
 
-  return render(request, 'tutorial/home.html', context)
+  return render(request, 'tamtt/home.html', context)
 # </HomeViewSnippet>
 
 # <InitializeContextSnippet>
@@ -197,7 +194,7 @@ def calendar(request, textout = None):
         print("Textout triggert")
         return json.dumps(fulldata)
 
-  return render(request, 'tutorial/calendar.html', context)
+  return render(request, 'tamtt/calendar.html', context)
 # </CalendarViewSnippet>
 
 # <CalenderViewDownload>
@@ -206,7 +203,7 @@ def calendar_download(request):
     # Define Django project base directory
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     # Define the full file path
-    filepath = BASE_DIR + '/tutorial/salesforceimport.sh'
+    filepath = BASE_DIR + '/tamtt/salesforceimport.sh'
     # Open the file for reading content
     path = open(filepath, 'r')
     # Enrich script with timesheet JSON data
@@ -239,5 +236,5 @@ def presence(request):
 #
   context['events'] = events
 
-  return render(request, 'tutorial/presence.html', context)
+  return render(request, 'tamtt/presence.html', context)
 # </PresenceViewSnippet>

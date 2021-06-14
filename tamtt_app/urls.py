@@ -1,10 +1,10 @@
 # <UrlConfSnippet>
 from django.contrib import admin
 from django.urls import path, include
-from tutorial import views
+from tamtt import views
 
 urlpatterns = [
-    path('', include('tutorial.urls')),
+    path('', include('tamtt.urls')),
     path('admin/', admin.site.urls),
 ]
 # </UrlConfSnippet>

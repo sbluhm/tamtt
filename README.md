@@ -4,7 +4,7 @@
 
 To run the completed project in this folder, you need the following:
 
-- [Python](https://www.python.org/) (with [pip](https://pypi.org/project/pip/)) installed on your development machine. If you do not have Python, visit the previous link for download options. (**Note:** This tutorial was written with Python version 3.8.2 and Django version 3.0.4. The steps in this guide may work with other versions, but that has not been tested.)
+- [Python](https://www.python.org/) (with [pip](https://pypi.org/project/pip/)) installed on your development machine. If you do not have Python, visit the previous link for download options. (**Note:** This application was written with Python version 3.8.2 and Django version 3.0.4. The steps in this guide may work with other versions, but that has not been tested.)
 - Either a personal Microsoft account with a mailbox on Outlook.com, or a Microsoft work or school account.
 
 If you don't have a Microsoft account, there are a couple of options to get a free account:
@@ -21,12 +21,12 @@ If you don't have a Microsoft account, there are a couple of options to get a fr
 
 1. Select **New registration**. On the **Register an application** page, set the values as follows.
 
-    - Set **Name** to `Python Graph Tutorial`.
+    - Set **Name** to `TAMTT`.
     - Set **Supported account types** to **Accounts in any organizational directory and personal Microsoft accounts**.
     - Under **Redirect URI**, set the first drop-down to `Web` and set the value to `http://localhost:8000/callback`.
 
 
-1. Choose **Register**. On the **Python Graph Tutorial** page, copy the value of the **Application (client) ID** and save it, you will need it in the next step.
+1. Choose **Register**. On the **TAMTT** page, copy the value of the **Application (client) ID** and save it, you will need it in the next step.
 
 
 1. Select **Certificates & secrets** under **Manage**. Select the **New client secret** button. Enter a value in **Description** and select one of the options for **Expires** and choose **Add**.
