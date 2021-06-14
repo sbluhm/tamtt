@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'tutorial',
+    'tamtt',
 ]
 # </InstalledAppsSnippet>
 
@@ -52,7 +52,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'tamtt.urls'
+ROOT_URLCONF = 'tamtt_app.urls'
 
 TEMPLATES = [
     {
@@ -70,7 +70,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'tamtt.wsgi.application'
+WSGI_APPLICATION = 'tamtt_app.wsgi.application'
 
 
 # Database

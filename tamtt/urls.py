@@ -1,10 +1,18 @@
-# <UrlConfSnippet>
-from django.contrib import admin
-from django.urls import path, include
-from tutorial import views
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
+from django.urls import path
+
+from . import views
 
 urlpatterns = [
-    path('', include('tutorial.urls')),
-    path('admin/', admin.site.urls),
+  # /
+  path('', views.home, name='home'),
+  # TEMPORARY
+  path('signin', views.sign_in, name='signin'),
+  path('signout', views.sign_out, name='signout'),
+  path('callback', views.callback, name='callback'),
+  path('calendar', views.calendar, name='calendar'),
+  path('calendar/download', views.calendar_download, name='calendarDownload'),
+  path('presence', views.presence, name='presence'),
 ]
-# </UrlConfSnippet>
