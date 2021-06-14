@@ -1,5 +1,5 @@
 """
-WSGI config for graph_tutorial project.
+WSGI config for TAMTT project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'graph_tutorial.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'tamtt.settings')
 
 application = get_wsgi_application()

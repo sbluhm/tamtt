@@ -6,7 +6,7 @@ echo "You should have created oauth_settings.yml already (read documentation). I
 sudo pip3 install -r requirements.txt
 python3 manage.py migrate
 
-sudo cp microsoft-graph.service /etc/systemd/system/
-echo "Service is not automatically enabled. Enable by 'systemctl enable microsoft-graph.service'"
+sudo cp tamtt.service /etc/systemd/system/
+echo "Service is not automatically enabled. Enable by 'systemctl enable tamtt.service'"
 echo "Starting service now"
-sudo systemctl start microsoft-graph.service
+sudo systemctl start tamtt.service
