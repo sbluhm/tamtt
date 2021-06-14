@@ -80,8 +80,11 @@ def callback(request):
 def calendar(request, textout = None):
   preparation_time = timedelta(minutes=10)
   context = initialize_context(request)
+  try:
+      token = get_token(request)
+  except:
+      return sign_in(request)
 
-  token = get_token(request)
   if request.GET.get('week'):
     selected_date = request.GET['week']
     events = get_calendar_events(token, selected_date)
@@ -222,8 +225,11 @@ def calendar_download(request):
 # <PresenceViewSnippet>
 def presence(request):
   context = initialize_context(request)
+  try:
+      token = get_token(request)
+  except:
+      return sign_in(request)
 
-  token = get_token(request)
 
   events = get_presence_events(token)
 
