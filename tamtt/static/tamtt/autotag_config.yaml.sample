@@ -1,0 +1,33 @@
+---
+Project 1 DR123456:
+  subject:
+  - regex1
+  - regex2
+  - regex3
+  - regex4
+  body:
+  email:
+  - regex1
+  - regex2
+  - regex3
+  - regex4
+  deliverables:
+      deliverable1:
+          subject:
+          - regex1
+          - regex2
+          - regex3
+          - regex4
+          body:
+          - regex1
+          - regex2
+          - regex3
+          - regex4
+          email:
+Project 2 DR123456:
+  subject:
+  - regex1
+  - regex2
+  deliverables:
+      deliverable1:
+
