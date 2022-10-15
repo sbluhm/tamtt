@@ -1,0 +1,61 @@
+{% extends "tamtt/layout.html" %}
+{% block content %}
+{% load custom_tags %}
+<h1>Auto Tag</h1>
+<style>
+      table {
+        font-family: "Open Sans", "Helvetica Neue", helvetica, arial, sans-serif;
+      }
+
+      table td + td {
+	border-left:1px solid Gainsboro; 
+	vertical-align: middle;
+      }
+
+      tr:nth-of-type(odd) {
+        background-color: WhiteSmoke;
+      }
+
+</style>
+
+
+    <table class="table">
+       <thead>
+	 <tr>
+	   <th scope="col">
+              <form> 
+	      <label for="week">Choose a week:</label>
+              <select name="week" id="week" autocomplete="off" onchange='this.form.submit()'>
+              {% for week in calendar  %}
+                <option value="{{ week.7 }}" {% if week.9 %}selected="selected"{%endif%}>{{ week.8 }}</option>
+              {% endfor %}
+              </select>
+	      <noscript><input type="submit" value="Submit"></noscript>
+	      </form>
+
+	   </th>
+	   <th scope="col">&nbsp;</th>
+	   <th scope="col">&nbsp;</th>
+	   <th scope="col">&nbsp;</th>
+	   <th scope="col" colspan="4" >Time values in decimal</th>
+	   <th scope="col">&nbsp;</th>
+         </tr>
+
+       </thead>
+       <tbody>
+       <tr>
+               <td bgcolor="Gainsboro">&nbsp;</td>
+               <td bgcolor="Gainsboro">SAT</br>{{ currentweek.0|month_day }}</td>
+               <td bgcolor="Gainsboro">SUN</br>{{ currentweek.1|month_day }}</td>
+               <td bgcolor="Gainsboro">MON</br>{{ currentweek.2|month_day }}</td>
+               <td bgcolor="Gainsboro">TUE</br>{{ currentweek.3|month_day }}</td>
+               <td bgcolor="Gainsboro">WED</br>{{ currentweek.4|month_day }}</td>
+               <td bgcolor="Gainsboro">THU</br>{{ currentweek.5|month_day }}</td>
+               <td bgcolor="Gainsboro">FRI</br>{{ currentweek.6|month_day }}</td>
+       </tr>
+
+
+  </tbody>
+</table>
+
+{% endblock %}

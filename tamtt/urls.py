@@ -1,7 +1,9 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
+from django.views.generic import RedirectView
 from django.urls import path
+from django.conf.urls import url
 
 from . import views
 
@@ -15,4 +17,6 @@ urlpatterns = [
   path('calendar', views.calendar, name='calendar'),
   path('calendar/download', views.calendar_download, name='calendarDownload'),
   path('presence', views.presence, name='presence'),
+  path('autotag', views.autotag, name='autotag'),
+  url(r'^favicon\.ico$',RedirectView.as_view(url='/static/tamtt/images/favicon.ico')),
 ]

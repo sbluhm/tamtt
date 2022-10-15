@@ -2,12 +2,13 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from tamtt.auth_helper import get_sign_in_url, get_token_from_code, store_token, store_user, remove_user_and_token, get_token
-from tamtt.graph_helper import get_user, get_calendar_events, get_presence_events
+from tamtt.graph_helper import get_user, get_calendar_events, get_presence_events, patch_event_categories, load_autotag_config
 import dateutil.parser
 from datetime import datetime, timedelta
 from math import ceil
 import json
 import os
+import re
 
 def duration_decimal(td):
     total_seconds = int(td.total_seconds())
@@ -113,7 +114,7 @@ def calendar(request, textout = None):
         if len(tempdeliverable) < 1:
             tempdeliverable.append("Others")
         if len(tempcust) < 1:
-            tempcust.append("Others")
+            tempcust.append("Customer Support")
 
         if not event['responseStatus']['response'] == "none":
             duration += preparation_time
@@ -244,3 +245,117 @@ def presence(request):
 
   return render(request, 'tamtt/presence.html', context)
 # </PresenceViewSnippet>
+
+# <AutotagViewSnippet>
+def autotag(request):
+  preparation_time = timedelta(minutes=10)
+  context = initialize_context(request)
+  try:
+      token = get_token(request)
+  except:
+      return sign_in(request)
+
+  if request.GET.get('week'):
+    selected_date = request.GET['week']
+    events = get_calendar_events(token, selected_date)
+  else:
+    events = get_calendar_events(token)
+    selected_date = datetime.now().strftime("%Y-%m-%d")
+
+
+  timesheet = {}
+  totaltime = [timedelta(0)]*8 # 8 will be the week total
+  week_totaltime = timedelta(0)
+  customer_totaltime = {}
+
+# Read Autotags from config
+  matchterms=load_autotag_config(token)
+
+  if events:
+    # Step one, split out and merge customers and deliverables
+    for event in events['value']:
+        weekday = dateutil.parser.parse(event['start']['dateTime']).weekday()
+        duration = dateutil.parser.parse(event['end']['dateTime']) - dateutil.parser.parse(event['start']['dateTime'])
+        tempcust = []
+        tempdeliverable = []
+#        if not event['categories']:
+        # Progress only with tagging if no "non-deliverable" tag is assigned
+        if not [ item for item in event['categories'] if not item[0].isdigit() ]:
+          if not event['seriesMasterId']:
+              id=event['id']
+          else:
+              id=event['seriesMasterId']
+
+          # Loop through project tags
+          for project in matchterms:
+              tagged = False
+
+              # Test for subject
+              try:
+                  for regex in matchterms[project]['subject']:
+                    if re.search(regex, event['subject']) and 'subject' in matchterms[project]:
+                      event['categories'].append(project)
+                      updated_event = patch_event_categories(token, id, event['categories'])
+                      tagged = True
+                      break
+                  if tagged:
+                      continue
+              except:
+                  pass
+
+              # Test for body
+#                if re.search(r'inxxxg\b', event['body']['content']):
+#                    print("yeah")
+#                    break
+
+              # Test for e-mails
+              try:
+                  for attendee in event['attendees']:
+                      for regex in matchterms[project]['email']:
+                        if re.search(regex, attendee['emailAddress']['address']):
+                          updated_event = patch_event_categories(token, id, project)
+                          tagged = True
+                          break
+                      if tagged:
+                          continue
+              except:
+                  pass
+
+        else:
+            continue
+
+# Week Picker
+    weekday = datetime.strptime( datetime.now().strftime("%Y-%m-%d"), "%Y-%m-%d")
+    if weekday.weekday() < 5:
+        start_date = weekday - timedelta(days=weekday.weekday()+2) # Saturday before input_week
+    else:
+        start_date = weekday - timedelta(days=weekday.weekday()-5) # Saturday before input_week
+    end_date = start_date + timedelta(days=6)
+    calendar = []
+    currentweek = []
+    selected_weekday=datetime.strptime(selected_date, "%Y-%m-%d")
+    selected_start_date = selected_weekday - timedelta(days=selected_weekday.weekday()+2)
+    if selected_weekday.weekday() >= 5:
+      selected_start_date = selected_start_date + timedelta(days=7)
+
+    for i in range(5):
+        week = ["","","","","","","","","",False] # 0-6 = date, 7 = start date text, 8  = week text, 9 = current week
+        loop_start_date = start_date - timedelta(days=7*i) # Saturday before input_week
+        loop_end_date = loop_start_date + timedelta(days=6)
+        for j in range(7):
+            week[j] = loop_start_date + timedelta(days=j)
+        week[7] = week[0].strftime("%Y-%m-%d")
+        week[8] = loop_start_date.strftime("%Y-%m-%d") + " - " + loop_end_date.strftime("%Y-%m-%d")
+        if loop_start_date == selected_start_date:
+            week[9] = True
+            currentweek = week
+        calendar.append(week)
+
+
+# Pass data to template
+    context['calendar'] = calendar                          # For week picker
+    context['currentweek'] = currentweek
+
+  return render(request, 'tamtt/autotag.html', context)
+# </AutotagViewSnippet>
+
